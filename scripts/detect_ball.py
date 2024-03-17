@@ -24,26 +24,34 @@ from sensor_msgs.msg import Image
 
 img_received = False
 # define a 720x1280 3-channel image with all pixels equal to zero
-rgb_img = np.zeros((720, 1280, 3), dtype = "uint8")
+global rgb_img = np.zeros((720, 1280, 3), dtype = "uint8")
 
 
 # get the image message
 def get_image(ros_img):
-	global rgb_img
+	#global rgb_img
 	global img_received
 	# convert to opencv image
 	rgb_img = CvBridge().imgmsg_to_cv2(ros_img, "rgb8")
 	# raise flag
 	img_received = True
-
 	
+def process_image(process_img):
+	hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+	lower_yellow_hsv = np.array([25, 100, 1])
+	upper_yellow_hsv = np.array([60, 255, 255])
+	yellow_mask = cv2.inRange(hsv, lower_yellow_hsv, upper_yellow_hsv)
+	
+	#rm_background = np.zeros(
+	#print('This image is:', type(yellow_mask), 'with dimension:', yellow_mask.shape)
+
 if __name__ == '__main__':
 	# define the node and subcribers and publishers
-	rospy.init_node('flip_image', anonymous = True)
+	rospy.init_node('ball_2D', anonymous = True)
 	# define a subscriber to ream images
 	img_sub = rospy.Subscriber("/camera/color/image_raw", Image, get_image) 
 	# define a publisher to publish images
-	img_pub = rospy.Publisher('/flipped_image', Image, queue_size = 1)
+	img_pub = rospy.Publisher('/ball_2D', Image, queue_size = 1)
 	
 	# set the loop frequency
 	rate = rospy.Rate(10)
@@ -52,12 +60,13 @@ if __name__ == '__main__':
 		# make sure we process if the camera has started streaming images
 		if img_received:
 			# flip the image up			
-			flipped_img = cv2.flip(rgb_img, 0)
+			mono-color-image = get_image(rgb_image)
 			# convert it to ros msg and publish it
-			img_msg = CvBridge().cv2_to_imgmsg(flipped_img, encoding="rgb8")
+			img_msg = CvBridge().cv2_to_imgmsg(mono-color-image, encoding="mono8")
 			# publish the image
 			img_pub.publish(img_msg)
 		# pause until the next iteration			
 		rate.sleep()
+
 
 
