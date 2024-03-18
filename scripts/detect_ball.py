@@ -39,15 +39,14 @@ def process_image(process_img):
 	#convert to HSV 
 	hsv = cv2.cvtColor(process_img, cv2.COLOR_RGB2HSV)
 	#setting high and low values for HSV 
-	lower_yellow_hsv = np.array([20, 100, 100])
-	upper_yellow_hsv = np.array([30, 255, 255])
+	lower_yellow_hsv = np.array([20, 1, 1])
+	upper_yellow_hsv = np.array([50, 255, 255])
 	#allows for only tennis ball to be shohwn
 	yellow_mask = cv2.inRange(hsv, lower_yellow_hsv, upper_yellow_hsv)
 	#remove other objects detected in background
 	rm_background  = np.zeros_like(yellow_mask)
-	#(x,y), (x + w, y + h) potential adjust
-    	cv2.rectangle(rm_background, (10, 10), (10 + 100, 10 + 100), 255, -1)  #potential adjust
-	return cv2.bitewise_and(yellow_mask, rect_funct)
+	rect_funct = cv2.rectangle(rm_background, (500, 100), (800, 600), 255, -1) #(10 + 100, 10 + 100), 255, -1)
+	return cv2.bitwise_and(yellow_mask, rect_funct)
 	
 	#print('This image is:', type(yellow_mask), 'with dimension:', yellow_mask.shape)
 
@@ -66,10 +65,10 @@ if __name__ == '__main__':
 	while not rospy.is_shutdown():
 		# make sure we process if the camera has started streaming images
 		if img_received:
-			# create reverasal image
-			mono-color-image = process_image(rgb_img)
+			# create color reverasal image
+			mono_color_image = process_image(rgb_img)
 			# convert it to ros msg and publish it
-			img_msg = CvBridge().cv2_to_imgmsg(mono-color-image, encoding="mono8")
+			img_msg = CvBridge().cv2_to_imgmsg(mono_color_image, encoding="mono8")
 			# publish the image
 			img_pub.publish(img_msg)
 		# pause until the next iteration			
