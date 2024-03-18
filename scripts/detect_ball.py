@@ -2,7 +2,6 @@
 ### 3/18/2024
 ### lab 4
 
-###subsribes to correct topic and receives  image frames from the recorded bag file (same topic as real camera)
 
 ###proceses image via techniques using HSV color space 
 ###produces mono-color image (figure ground reversal)
@@ -24,12 +23,12 @@ from sensor_msgs.msg import Image
 
 img_received = False
 # define a 720x1280 3-channel image with all pixels equal to zero
-global rgb_img = np.zeros((720, 1280, 3), dtype = "uint8")
+rgb_img = np.zeros((720, 1280, 3), dtype = "uint8")
 
 
 # get the image message
 def get_image(ros_img):
-	#global rgb_img
+	global rgb_img
 	global img_received
 	# convert to opencv image
 	rgb_img = CvBridge().imgmsg_to_cv2(ros_img, "rgb8")
@@ -37,15 +36,23 @@ def get_image(ros_img):
 	img_received = True
 	
 def process_image(process_img):
-	hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-	lower_yellow_hsv = np.array([25, 100, 1])
-	upper_yellow_hsv = np.array([60, 255, 255])
+	#convert to HSV 
+	hsv = cv2.cvtColor(process_img, cv2.COLOR_RGB2HSV)
+	#setting high and low values for HSV 
+	lower_yellow_hsv = np.array([20, 100, 100])
+	upper_yellow_hsv = np.array([30, 255, 255])
+	#allows for only tennis ball to be shohwn
 	yellow_mask = cv2.inRange(hsv, lower_yellow_hsv, upper_yellow_hsv)
+	#remove other objects detected in background
+	rm_background  = np.zeros_like(yellow_mask)
+	#(x,y), (x + w, y + h) potential adjust
+    	cv2.rectangle(rm_background, (10, 10), (10 + 100, 10 + 100), 255, -1)  #potential adjust
+	return cv2.bitewise_and(yellow_mask, rect_funct)
 	
-	#rm_background = np.zeros(
 	#print('This image is:', type(yellow_mask), 'with dimension:', yellow_mask.shape)
 
 if __name__ == '__main__':
+	###subsribes to correct topic and receives  image frames from the recorded bag file (same topic as real camera
 	# define the node and subcribers and publishers
 	rospy.init_node('ball_2D', anonymous = True)
 	# define a subscriber to ream images
@@ -59,8 +66,8 @@ if __name__ == '__main__':
 	while not rospy.is_shutdown():
 		# make sure we process if the camera has started streaming images
 		if img_received:
-			# flip the image up			
-			mono-color-image = get_image(rgb_image)
+			# create reverasal image
+			mono-color-image = process_image(rgb_img)
 			# convert it to ros msg and publish it
 			img_msg = CvBridge().cv2_to_imgmsg(mono-color-image, encoding="mono8")
 			# publish the image
