@@ -2,6 +2,7 @@
 ### 3/18/2024
 ### lab 4
 
+##sources: in class lectures, provided repository resources, online sources.
 
 ###proceses image via techniques using HSV color space 
 ###produces mono-color image (figure ground reversal)
@@ -45,10 +46,9 @@ def process_image(process_img):
 	yellow_mask = cv2.inRange(hsv, lower_yellow_hsv, upper_yellow_hsv)
 	#remove other objects detected in background
 	rm_background  = np.zeros_like(yellow_mask)
-	rect_funct = cv2.rectangle(rm_background, (500, 100), (800, 600), 255, -1) #(10 + 100, 10 + 100), 255, -1)
+	rect_funct = cv2.rectangle(rm_background, (500, 100), (800, 600), 255, -1) #draws rectangle in black accross middle of image, then inverts
 	return cv2.bitwise_and(yellow_mask, rect_funct)
 	
-	#print('This image is:', type(yellow_mask), 'with dimension:', yellow_mask.shape)
 
 if __name__ == '__main__':
 	###subsribes to correct topic and receives  image frames from the recorded bag file (same topic as real camera
