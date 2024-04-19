@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 ###sidney Tsui 
 ### 3/18/2024
 ### lab 4
@@ -15,7 +16,7 @@
 	
 ###test by playing rosbag file and rqt_gui
 
-#!/usr/bin/env python3
+
 import rospy
 import numpy as np
 import cv2
